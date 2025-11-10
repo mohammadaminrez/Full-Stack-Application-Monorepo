@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7
+    container_name: aladia-mongodb
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_DATABASE: aladia
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/aladia --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aladia-network
+
+  # Authentication Microservice
+  authentication:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aladia-auth
+    restart: unless-stopped
+    command: node dist/apps/authentication/main
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/aladia
+      - AUTH_HOST=0.0.0.0
+      - AUTH_PORT=3001
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - aladia-network
+    healthcheck:
+      test: ['CMD', 'node', '-e', 'console.log("ok")']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Gateway Service (HTTP API)
+  gateway:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aladia-gateway
+    restart: unless-stopped
+    command: node dist/apps/gateway/main
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - GATEWAY_PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/aladia
+      - AUTH_HOST=authentication
+      - AUTH_PORT=3001
+      - JWT_SECRET=${JWT_SECRET:-your-production-secret-change-me}
+      - JWT_EXPIRES_IN=24h
+      - THROTTLE_TTL=60000
+      - THROTTLE_LIMIT=10
+      - CACHE_TTL=300
+      - CACHE_MAX=100
+      - FRONTEND_URL=http://localhost:3001
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      authentication:
+        condition: service_healthy
+    networks:
+      - aladia-network
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:3000/api/health']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Next.js Frontend
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: aladia-web
+    restart: unless-stopped
+    ports:
+      - '3001:3000'
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:3000/api
+    depends_on:
+      gateway:
+        condition: service_healthy
+    networks:
+      - aladia-network
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:3000']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  aladia-network:
+    driver: bridge
