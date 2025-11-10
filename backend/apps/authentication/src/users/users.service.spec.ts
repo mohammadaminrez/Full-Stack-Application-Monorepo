@@ -35,7 +35,6 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-    repository = module.get<UsersRepository>(UsersRepository);
   });
 
   it('should be defined', () => {
