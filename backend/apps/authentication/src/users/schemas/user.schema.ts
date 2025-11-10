@@ -30,6 +30,10 @@ export class User extends Document {
     trim: true,
   })
   name: string;
+
+  // Timestamps added automatically by Mongoose
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
