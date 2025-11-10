@@ -43,7 +43,7 @@ export const Tabs: React.FC<TabsProps> = ({
   };
 
   // Keyboard navigation
-  const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
+  const handleKeyDown = (e: React.KeyboardEvent, _index: number) => {
     const enabledTabs = tabs.filter((t) => !t.disabled);
     const currentIndex = enabledTabs.findIndex((t) => t.id === activeTab);
 

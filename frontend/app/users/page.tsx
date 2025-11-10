@@ -96,7 +96,7 @@ export default function UsersPage() {
                 Unable to load users
               </h3>
               <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Please make sure you're registered
+                Please make sure you&apos;re registered
               </p>
               <div className="flex gap-3 justify-center">
                 <Link href="/register">

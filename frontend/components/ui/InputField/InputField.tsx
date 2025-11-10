@@ -34,7 +34,8 @@ export const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
     ref
   ) => {
     // Generate unique ID if not provided
-    const inputId = id || `input-${React.useId()}`;
+    const generatedId = React.useId();
+    const inputId = id || `input-${generatedId}`;
     const errorId = `${inputId}-error`;
     const helperId = `${inputId}-helper`;
 

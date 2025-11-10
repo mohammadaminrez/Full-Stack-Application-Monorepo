@@ -72,7 +72,7 @@ export const WithFooter: Story = {
 export const NoBackdropClose: Story = {
   render: () => (
     <ModalWithState title="No Backdrop Close" closeOnBackdrop={false}>
-      <p>Clicking the backdrop won't close this modal. Use the X button or ESC key.</p>
+      <p>Clicking the backdrop won&apos;t close this modal. Use the X button or ESC key.</p>
     </ModalWithState>
   ),
 };
