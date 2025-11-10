@@ -5,10 +5,11 @@ const nextConfig = {
   output: 'standalone',
   // API rewrites to backend (for local development)
   async rewrites() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
     return [
       {
         source: '/api/:path*',
-        destination: process.env.NEXT_PUBLIC_API_URL + '/:path*',
+        destination: `${apiUrl}/:path*`,
       },
     ];
   },
