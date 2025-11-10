@@ -28,6 +28,11 @@ function ModalWithState(props: any) {
 }
 
 export const Default: Story = {
+  args: {
+    isOpen: false,
+    onClose: () => {},
+    children: <p>This is a modal with default size and settings.</p>,
+  },
   render: () => (
     <ModalWithState title="Default Modal">
       <p>This is a modal with default size and settings.</p>
@@ -36,6 +41,11 @@ export const Default: Story = {
 };
 
 export const Small: Story = {
+  args: {
+    isOpen: false,
+    onClose: () => {},
+    children: <p>This is a small modal.</p>,
+  },
   render: () => (
     <ModalWithState title="Small Modal" size="sm">
       <p>This is a small modal.</p>
@@ -44,6 +54,11 @@ export const Small: Story = {
 };
 
 export const Large: Story = {
+  args: {
+    isOpen: false,
+    onClose: () => {},
+    children: <p>This is a large modal with more space for content.</p>,
+  },
   render: () => (
     <ModalWithState title="Large Modal" size="lg">
       <p>This is a large modal with more space for content.</p>
@@ -52,6 +67,11 @@ export const Large: Story = {
 };
 
 export const WithFooter: Story = {
+  args: {
+    isOpen: false,
+    onClose: () => {},
+    children: <p>This modal has action buttons in the footer.</p>,
+  },
   render: () => (
     <ModalWithState
       title="Modal with Footer"
@@ -70,6 +90,11 @@ export const WithFooter: Story = {
 };
 
 export const NoBackdropClose: Story = {
+  args: {
+    isOpen: false,
+    onClose: () => {},
+    children: <p>Clicking the backdrop won&apos;t close this modal. Use the X button or ESC key.</p>,
+  },
   render: () => (
     <ModalWithState title="No Backdrop Close" closeOnBackdrop={false}>
       <p>Clicking the backdrop won&apos;t close this modal. Use the X button or ESC key.</p>

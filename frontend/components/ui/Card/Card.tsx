@@ -54,22 +54,23 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       : '';
 
     const Component = clickable || onClick ? 'button' : 'div';
+    const componentProps = {
+      ref: ref as any,
+      className: cn(
+        baseStyles,
+        variants[variant],
+        clickableStyles,
+        clickable && 'text-left w-full',
+        className
+      ),
+      onClick: onClick as any,
+      role: clickable || onClick ? ('button' as const) : undefined,
+      tabIndex: clickable || onClick ? 0 : undefined,
+      ...props,
+    } as any;
 
     return (
-      <Component
-        ref={ref as any}
-        className={cn(
-          baseStyles,
-          variants[variant],
-          clickableStyles,
-          clickable && 'text-left w-full',
-          className
-        )}
-        onClick={onClick}
-        role={clickable || onClick ? 'button' : undefined}
-        tabIndex={clickable || onClick ? 0 : undefined}
-        {...props}
-      >
+      <Component {...componentProps}>
         {/* Image */}
         {image && (
           <div className="relative w-full h-48 bg-gray-200 dark:bg-gray-700">
