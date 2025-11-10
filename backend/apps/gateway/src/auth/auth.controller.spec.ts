@@ -1,13 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { ClientProxy } from '@nestjs/microservices';
 import { of } from 'rxjs';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let authService: AuthService;
-  let authClient: ClientProxy;
 
   const mockAuthService = {
     generateToken: jest.fn(),
@@ -33,8 +30,6 @@ describe('AuthController', () => {
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
-    authService = module.get<AuthService>(AuthService);
-    authClient = module.get<ClientProxy>('AUTH_SERVICE');
   });
 
   it('should be defined', () => {

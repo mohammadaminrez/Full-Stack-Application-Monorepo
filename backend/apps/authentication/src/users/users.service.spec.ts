@@ -5,7 +5,6 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 describe('UsersService', () => {
   let service: UsersService;
-  let repository: UsersRepository;
 
   const mockRepository = {
     create: jest.fn(),
