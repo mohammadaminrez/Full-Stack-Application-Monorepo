@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -8,6 +8,7 @@ import { LoggerModule } from '@app/core/logging/logger.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { HealthModule } from './health/health.module';
+import { RequestLoggerMiddleware } from './common/middleware/request-logger.middleware';
 
 /**
  * Gateway Service Root Module
@@ -56,4 +57,9 @@ import { HealthModule } from './health/health.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Apply request logger middleware to all routes
+    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+  }
+}

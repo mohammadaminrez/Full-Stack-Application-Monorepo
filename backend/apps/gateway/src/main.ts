@@ -4,6 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 /**
  * Gateway Service Bootstrap
@@ -19,9 +20,19 @@ async function bootstrap() {
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   // Enable CORS for frontend access
+  // In production, always use specific origin from env variable
+  const allowedOrigins = configService.get<string>('gateway.corsOrigin') || process.env.FRONTEND_URL;
+
+  if (!allowedOrigins && configService.get('NODE_ENV') === 'production') {
+    throw new Error('FRONTEND_URL must be set in production environment');
+  }
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL || '*', // Configure in production
+    origin: allowedOrigins ? allowedOrigins.split(',').map(o => o.trim()) : ['http://localhost:3001'],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
+    exposedHeaders: ['X-Request-ID'],
   });
 
   // Global API prefix
@@ -38,6 +49,9 @@ async function bootstrap() {
       },
     }),
   );
+
+  // Global exception filter for standardized error responses
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   // Swagger documentation setup
   const config = new DocumentBuilder()
