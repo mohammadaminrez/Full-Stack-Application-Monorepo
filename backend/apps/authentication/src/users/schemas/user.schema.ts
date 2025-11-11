@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 /**
  * User schema for MongoDB
  * Defines the structure and validation rules for user documents
+ * Each user can be created by another user (createdBy relationship)
  */
 @Schema({
   timestamps: true, // Automatically adds createdAt and updatedAt
@@ -31,6 +32,14 @@ export class User extends Document {
   })
   name: string;
 
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'User',
+    default: null,
+    index: true, // Index for filtering by creator
+  })
+  createdBy: Types.ObjectId | null;
+
   // Timestamps added automatically by Mongoose
   createdAt: Date;
   updatedAt: Date;
@@ -38,5 +47,5 @@ export class User extends Document {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-// Add index for email lookups (common operation)
-UserSchema.index({ email: 1 });
+// Add composite index for filtering users by creator
+UserSchema.index({ createdBy: 1, createdAt: -1 });

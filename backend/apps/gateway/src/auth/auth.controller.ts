@@ -5,8 +5,9 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  UseGuards,
   Inject,
+  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
@@ -21,8 +22,8 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 /**
  * Auth Controller - HTTP Gateway Layer
- * Handles all HTTP requests and forwards to authentication microservice via TCP
- * This is the ONLY place with HTTP logic (Controller pattern)
+ * Handles authentication (register/login) only
+ * User management has moved to UsersController
  */
 @ApiTags('Authentication')
 @Controller('auth')
@@ -33,12 +34,12 @@ export class AuthController {
   ) {}
 
   /**
-   * Register new user
+   * Register new user account
    * POST /api/auth/register
    */
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Register a new user' })
+  @ApiOperation({ summary: 'Register a new user account' })
   @ApiResponse({
     status: 201,
     description: 'User successfully registered',
@@ -81,7 +82,7 @@ export class AuthController {
     );
 
     if (!user) {
-      throw new Error('Invalid credentials');
+      throw new UnauthorizedException('Invalid email or password');
     }
 
     // Generate JWT token
@@ -91,7 +92,7 @@ export class AuthController {
   }
 
   /**
-   * Get all users
+   * Get all users (Assessment requirement: GET /auth/users)
    * GET /api/auth/users
    */
   @Get('users')
@@ -104,8 +105,7 @@ export class AuthController {
     type: [UserResponseDto],
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getUsers(): Promise<UserResponseDto[]> {
-    // Request user list from auth microservice via TCP
+  async getAllUsers(): Promise<UserResponseDto[]> {
     return firstValueFrom(
       this.authClient.send<UserResponseDto[]>(MESSAGE_PATTERNS.USER_FIND_ALL, {}),
     );

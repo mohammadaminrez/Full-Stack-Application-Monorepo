@@ -44,5 +44,15 @@ export const authApi = {
     api.post('/auth/register', data),
   login: (data: { email: string; password: string }) =>
     api.post('/auth/login', data),
-  getUsers: () => api.get('/auth/users'),
+  getAllUsers: () => api.get('/auth/users'),
+};
+
+export const usersApi = {
+  getMyUsers: () => api.get('/users'),
+  createUser: (data: { email: string; password: string; name: string }) =>
+    api.post('/users', data),
+  getUserById: (id: string) => api.get(`/users/${id}`),
+  updateUser: (id: string, data: Partial<{ email: string; password: string; name: string }>) =>
+    api.put(`/users/${id}`, data),
+  deleteUser: (id: string) => api.delete(`/users/${id}`),
 };
