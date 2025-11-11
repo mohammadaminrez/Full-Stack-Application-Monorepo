@@ -10,16 +10,15 @@ import { randomUUID } from 'crypto';
  */
 @Injectable()
 export class RequestLoggerMiddleware implements NestMiddleware {
-  constructor(
-    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger,
-  ) {}
+  constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger) {}
 
   use(req: Request, res: Response, next: NextFunction) {
     // Generate or use existing request ID
-    const requestId = req.headers['x-request-id'] as string || randomUUID();
+    const requestId = (req.headers['x-request-id'] as string) || randomUUID();
 
-    // Add request ID to request object for later use (using any to avoid type conflicts)
-    (req as any).requestId = requestId;
+    // Add request ID to request object for later use
+    // Using type assertion to extend Request with custom property
+    (req as Request & { requestId: string }).requestId = requestId;
 
     // Set response header
     res.setHeader('X-Request-ID', requestId);

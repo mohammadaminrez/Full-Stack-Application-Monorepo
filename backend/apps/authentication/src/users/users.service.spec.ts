@@ -96,7 +96,7 @@ describe('UsersService', () => {
           email: 'user1@test.com',
           name: 'User 1',
           createdAt: new Date(),
-          _id: 'mongo-id-1'
+          _id: 'mongo-id-1',
         },
       ];
 
@@ -145,27 +145,19 @@ describe('UsersService', () => {
       const result = await service.validateUser(email, 'WrongPassword');
 
       expect(result).toBeNull();
-      expect(mockRepository.validateUser).toHaveBeenCalledWith(
-        email,
-        'WrongPassword',
-      );
+      expect(mockRepository.validateUser).toHaveBeenCalledWith(email, 'WrongPassword');
     });
 
     it('should return null for non-existent user', async () => {
       mockRepository.validateUser.mockResolvedValue(null);
 
-      const result = await service.validateUser(
-        'nonexistent@example.com',
-        password,
-      );
+      const result = await service.validateUser('nonexistent@example.com', password);
 
       expect(result).toBeNull();
     });
 
     it('should handle validation errors from repository', async () => {
-      mockRepository.validateUser.mockRejectedValue(
-        new Error('Validation error'),
-      );
+      mockRepository.validateUser.mockRejectedValue(new Error('Validation error'));
 
       await expect(service.validateUser(email, password)).rejects.toThrow(
         'Validation error',

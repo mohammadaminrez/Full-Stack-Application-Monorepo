@@ -114,7 +114,11 @@ export class UsersRepository {
    * Update user information
    * Only the creator can update their created users
    */
-  async update(userId: string, updateUserDto: UpdateUserDto, creatorId: string): Promise<User> {
+  async update(
+    userId: string,
+    updateUserDto: UpdateUserDto,
+    creatorId: string,
+  ): Promise<User> {
     if (!Types.ObjectId.isValid(userId)) {
       throw new NotFoundException('User not found');
     }
@@ -126,7 +130,9 @@ export class UsersRepository {
     });
 
     if (!user) {
-      throw new NotFoundException('User not found or you do not have permission to update this user');
+      throw new NotFoundException(
+        'User not found or you do not have permission to update this user',
+      );
     }
 
     // Hash password if it's being updated
@@ -154,7 +160,9 @@ export class UsersRepository {
     });
 
     if (result.deletedCount === 0) {
-      throw new NotFoundException('User not found or you do not have permission to delete this user');
+      throw new NotFoundException(
+        'User not found or you do not have permission to delete this user',
+      );
     }
   }
 

@@ -50,7 +50,9 @@ export class UsersController {
    * Gateway sends creator ID, we return users created by that user
    */
   @MessagePattern(MESSAGE_PATTERNS.USER_FIND_BY_CREATOR)
-  async findByCreator(@Payload() payload: { creatorId: string }): Promise<UserResponseDto[]> {
+  async findByCreator(
+    @Payload() payload: { creatorId: string },
+  ): Promise<UserResponseDto[]> {
     return this.usersService.findByCreator(payload.creatorId);
   }
 
@@ -59,7 +61,9 @@ export class UsersController {
    * Gateway sends user ID, we return user data
    */
   @MessagePattern(MESSAGE_PATTERNS.USER_FIND_BY_ID)
-  async findById(@Payload() payload: { userId: string }): Promise<UserResponseDto | null> {
+  async findById(
+    @Payload() payload: { userId: string },
+  ): Promise<UserResponseDto | null> {
     return this.usersService.findById(payload.userId);
   }
 
@@ -70,9 +74,17 @@ export class UsersController {
   @MessagePattern(MESSAGE_PATTERNS.USER_UPDATE)
   async update(
     @Payload()
-    payload: { userId: string; updateUserDto: UpdateUserDto; creatorId: string },
+    payload: {
+      userId: string;
+      updateUserDto: UpdateUserDto;
+      creatorId: string;
+    },
   ): Promise<UserResponseDto> {
-    return this.usersService.updateUser(payload.userId, payload.updateUserDto, payload.creatorId);
+    return this.usersService.updateUser(
+      payload.userId,
+      payload.updateUserDto,
+      payload.creatorId,
+    );
   }
 
   /**
@@ -92,10 +104,9 @@ export class UsersController {
    * Gateway sends credentials, we validate and return user or null
    */
   @MessagePattern(MESSAGE_PATTERNS.USER_VALIDATE)
-  async validateUser(@Payload() payload: {
-    email: string;
-    password: string;
-  }): Promise<UserResponseDto | null> {
+  async validateUser(
+    @Payload() payload: { email: string; password: string },
+  ): Promise<UserResponseDto | null> {
     return this.usersService.validateUser(payload.email, payload.password);
   }
 

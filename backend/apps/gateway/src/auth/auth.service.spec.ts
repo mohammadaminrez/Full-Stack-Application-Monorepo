@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
-import { UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserResponseDto } from '@app/common/dto/user-response.dto';
 
@@ -72,9 +71,7 @@ describe('AuthService', () => {
         email: 'user2@example.com',
       };
 
-      mockJwtService.sign
-        .mockReturnValueOnce('token1')
-        .mockReturnValueOnce('token2');
+      mockJwtService.sign.mockReturnValueOnce('token1').mockReturnValueOnce('token2');
 
       const token1 = await service.generateToken(user1);
       const token2 = await service.generateToken(user2);
@@ -217,7 +214,9 @@ describe('AuthService', () => {
         throw new Error('invalid token');
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await expect(service.verifyToken(null as any)).rejects.toThrow();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await expect(service.verifyToken(undefined as any)).rejects.toThrow();
     });
 

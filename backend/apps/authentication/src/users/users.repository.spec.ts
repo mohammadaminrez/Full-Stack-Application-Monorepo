@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { ConflictException, InternalServerErrorException } from '@nestjs/common';
-import { Model } from 'mongoose';
 import { UsersRepository } from './users.repository';
 import { User } from './schemas/user.schema';
 import * as bcrypt from 'bcrypt';
@@ -10,7 +9,7 @@ jest.mock('bcrypt');
 
 describe('UsersRepository', () => {
   let repository: UsersRepository;
-  let model: Model<User>;
+  // let model: Model<User>; // Unused - keeping for potential future use
 
   const mockUser = {
     _id: '507f1f77bcf86cd799439011',
@@ -22,6 +21,7 @@ describe('UsersRepository', () => {
     toObject: jest.fn().mockReturnThis(),
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mockUserModel: any = jest.fn();
   mockUserModel.find = jest.fn();
   mockUserModel.findOne = jest.fn();
@@ -43,7 +43,7 @@ describe('UsersRepository', () => {
     }).compile();
 
     repository = module.get<UsersRepository>(UsersRepository);
-    model = module.get<Model<User>>(getModelToken(User.name));
+    // model = module.get<Model<User>>(getModelToken(User.name)); // Unused
 
     // Reset all mocks
     jest.clearAllMocks();
@@ -104,9 +104,7 @@ describe('UsersRepository', () => {
 
       mockUserModel.mockReturnValue(savedUser);
 
-      await expect(repository.create(createUserDto)).rejects.toThrow(
-        ConflictException,
-      );
+      await expect(repository.create(createUserDto)).rejects.toThrow(ConflictException);
       await expect(repository.create(createUserDto)).rejects.toThrow(
         'Email already registered',
       );
@@ -252,10 +250,7 @@ describe('UsersRepository', () => {
       expect(mockUserModel.findOne).toHaveBeenCalledWith({
         email: mockUser.email.toLowerCase(),
       });
-      expect(bcrypt.compare).toHaveBeenCalledWith(
-        password,
-        userWithPassword.password,
-      );
+      expect(bcrypt.compare).toHaveBeenCalledWith(password, userWithPassword.password);
       expect(result).toBeDefined();
       expect(result).toHaveProperty('password');
       expect(result?.email).toBe(mockUser.email);
@@ -284,10 +279,7 @@ describe('UsersRepository', () => {
       mockUserModel.findOne = jest.fn().mockReturnValue({ exec: execMock });
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      const result = await repository.validateUser(
-        mockUser.email,
-        'WrongPassword123!',
-      );
+      const result = await repository.validateUser(mockUser.email, 'WrongPassword123!');
 
       expect(bcrypt.compare).toHaveBeenCalledWith(
         'WrongPassword123!',
@@ -304,9 +296,7 @@ describe('UsersRepository', () => {
 
       const execMock = jest.fn().mockResolvedValue(userWithPassword);
       mockUserModel.findOne = jest.fn().mockReturnValue({ exec: execMock });
-      (bcrypt.compare as jest.Mock).mockRejectedValue(
-        new Error('Bcrypt error'),
-      );
+      (bcrypt.compare as jest.Mock).mockRejectedValue(new Error('Bcrypt error'));
 
       await expect(
         repository.validateUser(mockUser.email, 'Password123!'),

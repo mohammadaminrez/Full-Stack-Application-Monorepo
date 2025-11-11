@@ -43,7 +43,10 @@ export class UsersService {
    * Create a new user by an authenticated user
    * The authenticated user becomes the creator
    */
-  async createUser(createUserDto: CreateUserDto, creatorId: string): Promise<UserResponseDto> {
+  async createUser(
+    createUserDto: CreateUserDto,
+    creatorId: string,
+  ): Promise<UserResponseDto> {
     this.logger.log('Creating new user', {
       context: 'UsersService',
       email: createUserDto.email,

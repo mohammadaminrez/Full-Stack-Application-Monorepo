@@ -14,12 +14,13 @@ describe('UsersController', () => {
     validateUser: jest.fn(),
   };
 
-  const mockUser = {
-    id: '507f1f77bcf86cd799439011',
-    email: 'test@example.com',
-    name: 'Test User',
-    createdAt: new Date('2024-01-01'),
-  };
+  // Unused variable - keeping for potential future use
+  // const mockUser = {
+  //   id: '507f1f77bcf86cd799439011',
+  //   email: 'test@example.com',
+  //   name: 'Test User',
+  //   createdAt: new Date('2024-01-01'),
+  // };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -79,9 +80,7 @@ describe('UsersController', () => {
         name: 'Test',
       };
 
-      mockUsersService.register.mockRejectedValue(
-        new Error('Email already exists'),
-      );
+      mockUsersService.register.mockRejectedValue(new Error('Email already exists'));
 
       await expect(controller.register(registerDto)).rejects.toThrow(
         'Email already exists',
@@ -165,13 +164,9 @@ describe('UsersController', () => {
     });
 
     it('should handle service errors', async () => {
-      mockUsersService.findAll.mockRejectedValue(
-        new Error('Database connection failed'),
-      );
+      mockUsersService.findAll.mockRejectedValue(new Error('Database connection failed'));
 
-      await expect(controller.findAll()).rejects.toThrow(
-        'Database connection failed',
-      );
+      await expect(controller.findAll()).rejects.toThrow('Database connection failed');
     });
   });
 
@@ -237,9 +232,7 @@ describe('UsersController', () => {
         password: 'Password123!',
       };
 
-      mockUsersService.validateUser.mockRejectedValue(
-        new Error('Validation failed'),
-      );
+      mockUsersService.validateUser.mockRejectedValue(new Error('Validation failed'));
 
       await expect(controller.validateUser(loginDto)).rejects.toThrow(
         'Validation failed',

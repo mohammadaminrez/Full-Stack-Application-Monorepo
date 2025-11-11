@@ -21,14 +21,17 @@ async function bootstrap() {
 
   // Enable CORS for frontend access
   // In production, always use specific origin from env variable
-  const allowedOrigins = configService.get<string>('gateway.corsOrigin') || process.env.FRONTEND_URL;
+  const allowedOrigins =
+    configService.get<string>('gateway.corsOrigin') || process.env.FRONTEND_URL;
 
   if (!allowedOrigins && configService.get('NODE_ENV') === 'production') {
     throw new Error('FRONTEND_URL must be set in production environment');
   }
 
   app.enableCors({
-    origin: allowedOrigins ? allowedOrigins.split(',').map(o => o.trim()) : ['http://localhost:3001'],
+    origin: allowedOrigins
+      ? allowedOrigins.split(',').map((o) => o.trim())
+      : ['http://localhost:3001'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],

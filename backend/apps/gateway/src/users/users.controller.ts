@@ -13,7 +13,13 @@ import {
   Inject,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+} from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
 import { CreateUserDto } from '@app/common/dto/create-user.dto';
 import { UpdateUserDto } from '@app/common/dto/update-user.dto';
@@ -45,7 +51,9 @@ export class UsersController {
     type: [UserResponseDto],
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getMyUsers(@Request() req: any): Promise<UserResponseDto[]> {
+  async getMyUsers(
+    @Request() req: Express.Request & { user: { sub: string } },
+  ): Promise<UserResponseDto[]> {
     const creatorId = req.user.sub; // Extract user ID from JWT
 
     return firstValueFrom(
@@ -72,7 +80,7 @@ export class UsersController {
   @ApiResponse({ status: 409, description: 'Email already exists' })
   async createUser(
     @Body() createUserDto: CreateUserDto,
-    @Request() req: any,
+    @Request() req: Express.Request & { user: { sub: string } },
   ): Promise<UserResponseDto> {
     const creatorId = req.user.sub; // Extract user ID from JWT
 
@@ -100,7 +108,9 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'User not found' })
   async getUserById(@Param('id') userId: string): Promise<UserResponseDto | null> {
     return firstValueFrom(
-      this.authClient.send<UserResponseDto | null>(MESSAGE_PATTERNS.USER_FIND_BY_ID, { userId }),
+      this.authClient.send<UserResponseDto | null>(MESSAGE_PATTERNS.USER_FIND_BY_ID, {
+        userId,
+      }),
     );
   }
 
@@ -122,7 +132,7 @@ export class UsersController {
   async updateUser(
     @Param('id') userId: string,
     @Body() updateUserDto: UpdateUserDto,
-    @Request() req: any,
+    @Request() req: Express.Request & { user: { sub: string } },
   ): Promise<UserResponseDto> {
     const creatorId = req.user.sub; // Extract user ID from JWT
 
@@ -149,7 +159,10 @@ export class UsersController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'User not found or no permission' })
-  async deleteUser(@Param('id') userId: string, @Request() req: any): Promise<void> {
+  async deleteUser(
+    @Param('id') userId: string,
+    @Request() req: Express.Request & { user: { sub: string } },
+  ): Promise<void> {
     const creatorId = req.user.sub; // Extract user ID from JWT
 
     await firstValueFrom(

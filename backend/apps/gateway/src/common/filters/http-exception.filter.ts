@@ -49,8 +49,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
   /**
    * Extract error code from exception
    */
-  private getErrorCode(status: number, exceptionResponse: any): string {
-    if (typeof exceptionResponse === 'object' && exceptionResponse.error) {
+  private getErrorCode(
+    status: number,
+    exceptionResponse: string | Record<string, unknown>,
+  ): string {
+    if (
+      typeof exceptionResponse === 'object' &&
+      'error' in exceptionResponse &&
+      typeof exceptionResponse.error === 'string'
+    ) {
       return exceptionResponse.error;
     }
 
@@ -72,17 +79,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
   /**
    * Extract error message from exception
    */
-  private getErrorMessage(exceptionResponse: any): string | string[] {
+  private getErrorMessage(
+    exceptionResponse: string | Record<string, unknown>,
+  ): string | string[] {
     if (typeof exceptionResponse === 'string') {
       return exceptionResponse;
     }
 
-    if (typeof exceptionResponse === 'object') {
-      if (Array.isArray(exceptionResponse.message)) {
-        return exceptionResponse.message;
+    if (typeof exceptionResponse === 'object' && 'message' in exceptionResponse) {
+      const message = exceptionResponse.message;
+      if (Array.isArray(message)) {
+        return message as string[];
       }
-      if (exceptionResponse.message) {
-        return exceptionResponse.message;
+      if (typeof message === 'string') {
+        return message;
       }
     }
 
