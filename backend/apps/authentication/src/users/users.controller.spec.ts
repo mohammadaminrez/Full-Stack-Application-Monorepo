@@ -97,8 +97,8 @@ describe('UsersController', () => {
 
       const result = {
         id: 'new-id',
-        ...registerDto,
-        password: undefined,
+        email: registerDto.email,
+        name: registerDto.name,
         createdAt: new Date(),
       };
 

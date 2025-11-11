@@ -10,7 +10,7 @@ describe('JwtStrategy', () => {
   const mockConfigService = {
     get: jest.fn((key: string) => {
       const config: Record<string, string> = {
-        JWT_SECRET: 'test-secret-key-for-testing-minimum-32-characters-long',
+        'jwt.secret': 'test-secret-key-for-testing-minimum-32-characters-long',
       };
       return config[key];
     }),
@@ -151,7 +151,7 @@ describe('JwtStrategy', () => {
 
   describe('constructor and configuration', () => {
     it('should retrieve JWT secret from config service', () => {
-      expect(configService.get).toHaveBeenCalledWith('JWT_SECRET');
+      expect(configService.get).toHaveBeenCalledWith('jwt.secret');
     });
 
     it('should configure passport with correct options', () => {

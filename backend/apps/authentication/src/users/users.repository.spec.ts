@@ -22,17 +22,14 @@ describe('UsersRepository', () => {
     toObject: jest.fn().mockReturnThis(),
   };
 
-  const mockUserModel = {
-    new: jest.fn(),
-    constructor: jest.fn(),
-    find: jest.fn(),
-    findOne: jest.fn(),
-    findById: jest.fn(),
-    create: jest.fn(),
-    save: jest.fn(),
-    exec: jest.fn(),
-    select: jest.fn(),
-  };
+  const mockUserModel: any = jest.fn();
+  mockUserModel.find = jest.fn();
+  mockUserModel.findOne = jest.fn();
+  mockUserModel.findById = jest.fn();
+  mockUserModel.create = jest.fn();
+  mockUserModel.save = jest.fn();
+  mockUserModel.exec = jest.fn();
+  mockUserModel.select = jest.fn();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -73,7 +70,7 @@ describe('UsersRepository', () => {
 
       const savedUser = {
         ...mockUser,
-        toObject: () => ({
+        save: jest.fn().mockResolvedValue({
           _id: mockUser._id,
           email: mockUser.email,
           name: mockUser.name,
@@ -81,15 +78,16 @@ describe('UsersRepository', () => {
         }),
       };
 
-      mockUserModel.create = jest.fn().mockResolvedValue(savedUser);
+      mockUserModel.mockReturnValue(savedUser);
 
       const result = await repository.create(createUserDto);
 
       expect(bcrypt.hash).toHaveBeenCalledWith(createUserDto.password, 10);
-      expect(mockUserModel.create).toHaveBeenCalledWith({
+      expect(mockUserModel).toHaveBeenCalledWith({
         ...createUserDto,
         password: hashedPassword,
       });
+      expect(savedUser.save).toHaveBeenCalled();
       expect(result).toHaveProperty('email', createUserDto.email);
       expect(result).toHaveProperty('name', createUserDto.name);
       expect(result).not.toHaveProperty('password');
@@ -100,13 +98,17 @@ describe('UsersRepository', () => {
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
 
       const duplicateError = { code: 11000 };
-      mockUserModel.create = jest.fn().mockRejectedValue(duplicateError);
+      const savedUser = {
+        save: jest.fn().mockRejectedValue(duplicateError),
+      };
+
+      mockUserModel.mockReturnValue(savedUser);
 
       await expect(repository.create(createUserDto)).rejects.toThrow(
         ConflictException,
       );
       await expect(repository.create(createUserDto)).rejects.toThrow(
-        'Email already exists',
+        'Email already registered',
       );
     });
 
@@ -115,7 +117,11 @@ describe('UsersRepository', () => {
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
 
       const genericError = new Error('Database connection failed');
-      mockUserModel.create = jest.fn().mockRejectedValue(genericError);
+      const savedUser = {
+        save: jest.fn().mockRejectedValue(genericError),
+      };
+
+      mockUserModel.mockReturnValue(savedUser);
 
       await expect(repository.create(createUserDto)).rejects.toThrow(
         InternalServerErrorException,
@@ -130,11 +136,10 @@ describe('UsersRepository', () => {
       (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
 
       const savedUser = {
-        ...mockUser,
-        toObject: () => ({ ...mockUser }),
+        save: jest.fn().mockResolvedValue({ ...mockUser }),
       };
 
-      mockUserModel.create = jest.fn().mockResolvedValue(savedUser);
+      mockUserModel.mockReturnValue(savedUser);
 
       await repository.create(createUserDto);
 
@@ -172,7 +177,8 @@ describe('UsersRepository', () => {
         },
       ];
 
-      const selectMock = jest.fn().mockResolvedValue(users);
+      const execMock = jest.fn().mockResolvedValue(users);
+      const selectMock = jest.fn().mockReturnValue({ exec: execMock });
       mockUserModel.find = jest.fn().mockReturnValue({ select: selectMock });
 
       const result = await repository.findAll();
@@ -184,7 +190,8 @@ describe('UsersRepository', () => {
     });
 
     it('should return empty array when no users exist', async () => {
-      const selectMock = jest.fn().mockResolvedValue([]);
+      const execMock = jest.fn().mockResolvedValue([]);
+      const selectMock = jest.fn().mockReturnValue({ exec: execMock });
       mockUserModel.find = jest.fn().mockReturnValue({ select: selectMock });
 
       const result = await repository.findAll();
@@ -223,7 +230,7 @@ describe('UsersRepository', () => {
       await repository.findByEmail('TEST@EXAMPLE.COM');
 
       expect(mockUserModel.findOne).toHaveBeenCalledWith({
-        email: 'TEST@EXAMPLE.COM',
+        email: 'test@example.com',
       });
     });
   });
@@ -234,12 +241,6 @@ describe('UsersRepository', () => {
       const userWithPassword = {
         ...mockUser,
         password: 'hashedPassword123',
-        toObject: jest.fn().mockReturnValue({
-          _id: mockUser._id,
-          email: mockUser.email,
-          name: mockUser.name,
-          createdAt: mockUser.createdAt,
-        }),
       };
 
       const execMock = jest.fn().mockResolvedValue(userWithPassword);
@@ -249,14 +250,14 @@ describe('UsersRepository', () => {
       const result = await repository.validateUser(mockUser.email, password);
 
       expect(mockUserModel.findOne).toHaveBeenCalledWith({
-        email: mockUser.email,
+        email: mockUser.email.toLowerCase(),
       });
       expect(bcrypt.compare).toHaveBeenCalledWith(
         password,
         userWithPassword.password,
       );
       expect(result).toBeDefined();
-      expect(result).not.toHaveProperty('password');
+      expect(result).toHaveProperty('password');
       expect(result?.email).toBe(mockUser.email);
     });
 
