@@ -25,7 +25,7 @@ async function bootstrap() {
   });
 
   // Global API prefix
-  app.setGlobalPrefix(configService.get('gateway.globalPrefix'));
+  app.setGlobalPrefix(configService.get<string>('gateway.globalPrefix') || 'api');
 
   // Global validation pipe
   app.useGlobalPipes(

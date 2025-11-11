@@ -8,14 +8,14 @@ export default () => ({
 
   // Gateway service configuration
   gateway: {
-    port: parseInt(process.env.GATEWAY_PORT, 10) || 3000,
+    port: parseInt(process.env.GATEWAY_PORT || '3000', 10),
     globalPrefix: 'api',
   },
 
   // Authentication microservice configuration
   authentication: {
     host: process.env.AUTH_HOST || 'localhost',
-    port: parseInt(process.env.AUTH_PORT, 10) || 3001,
+    port: parseInt(process.env.AUTH_PORT || '3001', 10),
   },
 
   // Database configuration
@@ -36,13 +36,13 @@ export default () => ({
 
   // Rate limiting to prevent abuse
   throttle: {
-    ttl: parseInt(process.env.THROTTLE_TTL, 10) || 60000, // 1 minute
-    limit: parseInt(process.env.THROTTLE_LIMIT, 10) || 10, // 10 requests per minute
+    ttl: parseInt(process.env.THROTTLE_TTL || '60000', 10), // 1 minute
+    limit: parseInt(process.env.THROTTLE_LIMIT || '10', 10), // 10 requests per minute
   },
 
   // Cache configuration for performance
   cache: {
-    ttl: parseInt(process.env.CACHE_TTL, 10) || 300, // 5 minutes default
-    max: parseInt(process.env.CACHE_MAX, 10) || 100, // Maximum items in cache
+    ttl: parseInt(process.env.CACHE_TTL || '300', 10), // 5 minutes default
+    max: parseInt(process.env.CACHE_MAX || '100', 10), // Maximum items in cache
   },
 });

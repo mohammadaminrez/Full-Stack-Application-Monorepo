@@ -27,8 +27,8 @@ export const validationSchema = Joi.object({
   // JWT - must be changed in production for security
   JWT_SECRET: Joi.string().when('NODE_ENV', {
     is: 'production',
-    then: Joi.required().min(32),
-    otherwise: Joi.optional(),
+    then: Joi.string().required().min(32),
+    otherwise: Joi.string().optional(),
   }),
   JWT_EXPIRES_IN: Joi.string().default('24h'),
 

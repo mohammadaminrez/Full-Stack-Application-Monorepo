@@ -21,12 +21,14 @@ import { HealthModule } from './health/health.module';
 
     // Rate limiting (prevent abuse)
     ThrottlerModule.forRootAsync({
-      useFactory: (configService: ConfigService) => [
-        {
-          ttl: configService.get('throttle.ttl'),
-          limit: configService.get('throttle.limit'),
-        },
-      ],
+      useFactory: (configService: ConfigService) => ({
+        throttlers: [
+          {
+            ttl: configService.get<number>('throttle.ttl') || 60000,
+            limit: configService.get<number>('throttle.limit') || 10,
+          },
+        ],
+      }),
       inject: [ConfigService],
     }),
 
