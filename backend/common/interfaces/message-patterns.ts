@@ -7,6 +7,8 @@ export const MESSAGE_PATTERNS = {
   // User management patterns
   USER_REGISTER: { cmd: 'user.register' },
   USER_FIND_ALL: { cmd: 'user.findAll' },
+  USER_FIND_BY_EMAIL: { cmd: 'user.findByEmail' },
+  USER_VALIDATE: { cmd: 'user.validate' },
 
   // Health check pattern
   HEALTH_CHECK: { cmd: 'health.check' },

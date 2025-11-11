@@ -49,6 +49,27 @@ export class UsersService {
   }
 
   /**
+   * Find user by email
+   */
+  async findByEmail(email: string): Promise<UserResponseDto | null> {
+    const user = await this.usersRepository.findByEmail(email);
+    return user ? this.transformToDto(user) : null;
+  }
+
+  /**
+   * Validate user credentials for login
+   */
+  async validateUser(email: string, password: string): Promise<UserResponseDto | null> {
+    this.logger.log('Validating user credentials', {
+      context: 'UsersService',
+      email,
+    });
+
+    const user = await this.usersRepository.validateUser(email, password);
+    return user ? this.transformToDto(user) : null;
+  }
+
+  /**
    * Transform database entity to response DTO
    * Removes sensitive fields like password
    */

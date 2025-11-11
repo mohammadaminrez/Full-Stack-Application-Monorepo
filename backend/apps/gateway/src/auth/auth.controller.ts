@@ -12,6 +12,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { firstValueFrom } from 'rxjs';
 import { RegisterUserDto } from '@app/common/dto/register-user.dto';
+import { LoginUserDto } from '@app/common/dto/login-user.dto';
 import { UserResponseDto } from '@app/common/dto/user-response.dto';
 import { AuthResponseDto } from '@app/common/dto/auth-response.dto';
 import { MESSAGE_PATTERNS } from '@app/common/interfaces/message-patterns';
@@ -52,6 +53,38 @@ export class AuthController {
     );
 
     // Generate JWT token for the new user
+    const accessToken = await this.authService.generateToken(user);
+
+    return new AuthResponseDto(user, accessToken);
+  }
+
+  /**
+   * User login
+   * POST /api/auth/login
+   */
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Login with email and password' })
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful',
+    type: AuthResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  async login(@Body() loginDto: LoginUserDto): Promise<AuthResponseDto> {
+    // Validate credentials via auth microservice
+    const user = await firstValueFrom(
+      this.authClient.send<UserResponseDto | null>(
+        MESSAGE_PATTERNS.USER_VALIDATE,
+        loginDto,
+      ),
+    );
+
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+
+    // Generate JWT token
     const accessToken = await this.authService.generateToken(user);
 
     return new AuthResponseDto(user, accessToken);

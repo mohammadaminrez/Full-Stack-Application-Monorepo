@@ -33,6 +33,18 @@ export class UsersController {
   }
 
   /**
+   * Handle user validation via TCP (for login)
+   * Gateway sends credentials, we validate and return user or null
+   */
+  @MessagePattern(MESSAGE_PATTERNS.USER_VALIDATE)
+  async validateUser(payload: {
+    email: string;
+    password: string;
+  }): Promise<UserResponseDto | null> {
+    return this.usersService.validateUser(payload.email, payload.password);
+  }
+
+  /**
    * Handle health check via TCP
    * Allows gateway to verify this service is running
    */

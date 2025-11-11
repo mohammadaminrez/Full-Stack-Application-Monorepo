@@ -94,6 +94,7 @@ describe('Authentication E2E Tests', () => {
         .expect(409);
 
       expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toContain('already exists');
     });
 
     it('should fail with invalid email format', async () => {
@@ -194,6 +195,82 @@ describe('Authentication E2E Tests', () => {
     });
   });
 
+  describe('/api/auth/login (POST)', () => {
+    const testUser = {
+      email: 'login@example.com',
+      password: 'LoginPass123!',
+      name: 'Login Test User',
+    };
+
+    beforeAll(async () => {
+      // Register a user for login tests
+      await request(app.getHttpServer())
+        .post('/api/auth/register')
+        .send(testUser);
+    });
+
+    it('should login successfully with correct credentials', async () => {
+      const loginDto = {
+        email: testUser.email,
+        password: testUser.password,
+      };
+
+      const response = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send(loginDto)
+        .expect(200);
+
+      expect(response.body).toHaveProperty('user');
+      expect(response.body).toHaveProperty('accessToken');
+      expect(response.body.user.email).toBe(testUser.email);
+      expect(response.body.user).not.toHaveProperty('password');
+      expect(typeof response.body.accessToken).toBe('string');
+    });
+
+    it('should fail with incorrect password', async () => {
+      const wrongPasswordDto = {
+        email: testUser.email,
+        password: 'WrongPassword123!',
+      };
+
+      await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send(wrongPasswordDto)
+        .expect(401);
+    });
+
+    it('should fail with non-existent email', async () => {
+      const nonExistentDto = {
+        email: 'nonexistent@example.com',
+        password: 'Password123!',
+      };
+
+      await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send(nonExistentDto)
+        .expect(401);
+    });
+
+    it('should fail with invalid email format', async () => {
+      const invalidEmailDto = {
+        email: 'invalid-email',
+        password: 'Password123!',
+      };
+
+      await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send(invalidEmailDto)
+        .expect(400);
+    });
+
+    it('should fail with missing credentials', async () => {
+      await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send({})
+        .expect(400);
+    });
+  });
+
   describe('/api/auth/users (GET)', () => {
     it('should return users list with valid token', async () => {
       const response = await request(app.getHttpServer())
@@ -229,6 +306,8 @@ describe('Authentication E2E Tests', () => {
     });
 
     it('should fail with expired token', async () => {
+      // This would require generating a token with past expiration
+      // For now, we just test with an invalid token format
       const expiredLikeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.expired.token';
 
       await request(app.getHttpServer())
@@ -239,7 +318,7 @@ describe('Authentication E2E Tests', () => {
   });
 
   describe('Complete User Journey', () => {
-    it('should complete full registration -> access protected route flow', async () => {
+    it('should complete full registration -> login -> access protected route flow', async () => {
       const newUser = {
         email: 'journey@example.com',
         password: 'JourneyPass123!',
@@ -256,15 +335,35 @@ describe('Authentication E2E Tests', () => {
       const registerToken = registerResponse.body.accessToken;
 
       // Step 2: Access protected route with registration token
-      const usersResponse = await request(app.getHttpServer())
+      const usersResponse1 = await request(app.getHttpServer())
         .get('/api/auth/users')
         .set('Authorization', `Bearer ${registerToken}`)
         .expect(200);
 
-      expect(Array.isArray(usersResponse.body)).toBe(true);
+      expect(Array.isArray(usersResponse1.body)).toBe(true);
+
+      // Step 3: Login with same credentials
+      const loginResponse = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send({
+          email: newUser.email,
+          password: newUser.password,
+        })
+        .expect(200);
+
+      expect(loginResponse.body).toHaveProperty('accessToken');
+      const loginToken = loginResponse.body.accessToken;
+
+      // Step 4: Access protected route with login token
+      const usersResponse2 = await request(app.getHttpServer())
+        .get('/api/auth/users')
+        .set('Authorization', `Bearer ${loginToken}`)
+        .expect(200);
+
+      expect(Array.isArray(usersResponse2.body)).toBe(true);
 
       // Verify the user appears in the users list
-      const foundUser = usersResponse.body.find(
+      const foundUser = usersResponse2.body.find(
         (u: any) => u.email === newUser.email,
       );
       expect(foundUser).toBeDefined();
