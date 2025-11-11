@@ -6,7 +6,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "nest build",
+    "build": "nest build gateway && nest build authentication",
     "format": "prettier --write \"apps/**/*.ts\" \"common/**/*.ts\" \"core/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
