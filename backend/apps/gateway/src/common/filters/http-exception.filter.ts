@@ -31,7 +31,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest();
     const status = exception.getStatus();
-    const exceptionResponse = exception.getResponse();
+    const exceptionResponse = exception.getResponse() as string | Record<string, unknown>;
 
     // Extract error details
     const errorResponse: StandardErrorResponse = {
