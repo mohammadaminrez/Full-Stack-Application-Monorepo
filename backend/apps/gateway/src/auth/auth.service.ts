@@ -28,7 +28,7 @@ export class AuthService {
    * Verify and decode JWT token
    * Returns payload if valid, throws error if invalid
    */
-  async verifyToken(token: string): Promise<any> {
+  async verifyToken(token: string): Promise<{ sub: string; email: string }> {
     return this.jwtService.verify(token);
   }
 }

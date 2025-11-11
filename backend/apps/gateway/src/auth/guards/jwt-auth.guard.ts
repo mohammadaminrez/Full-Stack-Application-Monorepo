@@ -12,7 +12,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    * Handle request validation
    * Throws clear error message if auth fails
    */
-  handleRequest(err: any, user: any) {
+  handleRequest(err: Error | null, user: { userId: string; email: string } | false) {
     if (err || !user) {
       throw new UnauthorizedException('Invalid or missing authentication token');
     }
