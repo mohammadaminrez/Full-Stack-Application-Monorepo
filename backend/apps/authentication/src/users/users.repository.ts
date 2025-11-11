@@ -49,31 +49,4 @@ export class UsersRepository {
   async findAll(): Promise<User[]> {
     return this.userModel.find().select('-password').exec();
   }
-
-  /**
-   * Find user by email (including password for authentication)
-   * Returns null if user not found
-   */
-  async findByEmail(email: string): Promise<User | null> {
-    return this.userModel.findOne({ email: email.toLowerCase() }).exec();
-  }
-
-  /**
-   * Validate user credentials
-   * Returns user if credentials are valid, null otherwise
-   */
-  async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.findByEmail(email);
-    if (!user) {
-      return null;
-    }
-
-    // Compare provided password with hashed password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return null;
-    }
-
-    return user;
-  }
 }
