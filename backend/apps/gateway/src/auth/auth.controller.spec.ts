@@ -73,7 +73,7 @@ describe('AuthController', () => {
 
       mockAuthClient.send.mockReturnValue(of(mockUsers));
 
-      const result = await controller.getUsers();
+      const result = await controller.getAllUsers();
 
       expect(result).toHaveLength(2);
       expect(result[0]).toHaveProperty('email');

@@ -86,6 +86,7 @@ describe('UsersRepository', () => {
       expect(mockUserModel).toHaveBeenCalledWith({
         ...createUserDto,
         password: hashedPassword,
+        createdBy: null,
       });
       expect(savedUser.save).toHaveBeenCalled();
       expect(result).toHaveProperty('email', createUserDto.email);

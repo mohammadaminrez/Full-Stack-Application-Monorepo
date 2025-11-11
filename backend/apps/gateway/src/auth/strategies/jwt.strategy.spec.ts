@@ -50,11 +50,11 @@ describe('JwtStrategy', () => {
       const result = await strategy.validate(payload);
 
       expect(result).toBeDefined();
-      expect(result).toHaveProperty('userId', payload.sub);
+      expect(result).toHaveProperty('sub', payload.sub);
       expect(result).toHaveProperty('email', payload.email);
     });
 
-    it('should extract userId from sub claim', async () => {
+    it('should extract sub from payload', async () => {
       const payload = {
         sub: 'user-id-123',
         email: 'user@example.com',
@@ -62,7 +62,7 @@ describe('JwtStrategy', () => {
 
       const result = await strategy.validate(payload);
 
-      expect(result.userId).toBe(payload.sub);
+      expect(result.sub).toBe(payload.sub);
     });
 
     it('should preserve email from payload', async () => {
@@ -76,7 +76,7 @@ describe('JwtStrategy', () => {
       expect(result.email).toBe(payload.email);
     });
 
-    it('should return object with userId and email properties', async () => {
+    it('should return object with sub and email properties', async () => {
       const payload = {
         sub: 'abc123',
         email: 'valid@example.com',
@@ -84,8 +84,8 @@ describe('JwtStrategy', () => {
 
       const result = await strategy.validate(payload);
 
-      expect(Object.keys(result)).toEqual(['userId', 'email']);
-      expect(result.userId).toBeDefined();
+      expect(Object.keys(result)).toEqual(['sub', 'email']);
+      expect(result.sub).toBeDefined();
       expect(result.email).toBeDefined();
     });
 
@@ -100,7 +100,7 @@ describe('JwtStrategy', () => {
 
       const result = await strategy.validate(payload);
 
-      expect(result.userId).toBe(payload.sub);
+      expect(result.sub).toBe(payload.sub);
       expect(result.email).toBe(payload.email);
       expect(result).not.toHaveProperty('iat');
       expect(result).not.toHaveProperty('exp');
@@ -143,7 +143,7 @@ describe('JwtStrategy', () => {
 
         const result = await strategy.validate(payload);
 
-        expect(result.userId).toBe(userId);
+        expect(result.sub).toBe(userId);
       }
     });
   });
@@ -172,7 +172,7 @@ describe('JwtStrategy', () => {
 
       const result = await strategy.validate(payload);
 
-      expect(result.userId).toBe('1');
+      expect(result.sub).toBe('1');
       expect(result.email).toBe('a@b.c');
     });
 
@@ -185,7 +185,7 @@ describe('JwtStrategy', () => {
 
       const result = await strategy.validate(payload);
 
-      expect(result.userId).toBe(longUserId);
+      expect(result.sub).toBe(longUserId);
     });
 
     it('should handle payload with special characters in email', async () => {
@@ -213,7 +213,7 @@ describe('JwtStrategy', () => {
 
       expect(results).toHaveLength(3);
       results.forEach((result, index) => {
-        expect(result.userId).toBe(payloads[index].sub);
+        expect(result.sub).toBe(payloads[index].sub);
         expect(result.email).toBe(payloads[index].email);
       });
     });
@@ -237,7 +237,7 @@ describe('JwtStrategy', () => {
       const user = await strategy.validate(payload);
 
       // This object will be attached to request.user by Passport
-      expect(user).toHaveProperty('userId');
+      expect(user).toHaveProperty('sub');
       expect(user).toHaveProperty('email');
       expect(typeof user).toBe('object');
     });
