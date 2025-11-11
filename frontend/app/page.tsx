@@ -16,40 +16,40 @@ export default function Home() {
 
         <div className="max-w-2xl mx-auto text-center">
           <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6">
-            Aladia Full-Stack Application
+            User Management System
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-            Modern microservices architecture with NestJS backend and Next.js frontend
+            Create and manage user accounts with secure authentication
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register">
-              <Button size="lg">Get Started</Button>
+              <Button size="lg">Create Account</Button>
             </Link>
             <Link href="/users">
               <Button variant="outline" size="lg">
-                View Users
+                Browse Users
               </Button>
             </Link>
           </div>
 
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold mb-2">🚀 Fast & Scalable</h3>
+              <h3 className="text-lg font-semibold mb-2">👥 User Directory</h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Built with modern tech stack for optimal performance
+                View and manage all registered users in one place
               </p>
             </div>
             <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold mb-2">🔒 Secure</h3>
+              <h3 className="text-lg font-semibold mb-2">🔒 Secure Access</h3>
               <p className="text-gray-600 dark:text-gray-400">
-                JWT authentication and encrypted passwords
+                JWT authentication with encrypted password storage
               </p>
             </div>
             <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold mb-2">♿ Accessible</h3>
+              <h3 className="text-lg font-semibold mb-2">⚡ Quick Registration</h3>
               <p className="text-gray-600 dark:text-gray-400">
-                WCAG compliant components and ARIA support
+                Simple sign-up process with instant account creation
               </p>
             </div>
           </div>
