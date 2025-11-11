@@ -26,11 +26,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Clear token on 401 (unauthorized)
+    // Clear token on 401 (unauthorized) but let pages handle the error
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('accessToken');
-        window.location.href = '/login';
       }
     }
     return Promise.reject(error);

@@ -42,6 +42,9 @@ COPY --from=builder /app/node_modules ./node_modules
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nestjs -u 1001
 
+# Create logs directory with proper permissions
+RUN mkdir -p logs && chown -R nestjs:nodejs logs
+
 USER nestjs
 
 # Default to gateway (can be overridden in docker-compose)

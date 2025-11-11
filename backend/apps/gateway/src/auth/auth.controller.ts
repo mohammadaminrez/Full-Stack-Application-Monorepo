@@ -49,10 +49,7 @@ export class AuthController {
   async register(@Body() registerDto: RegisterUserDto): Promise<AuthResponseDto> {
     // Send registration request to auth microservice via TCP
     const user = await firstValueFrom(
-      this.authClient.send<UserResponseDto>(
-        MESSAGE_PATTERNS.USER_REGISTER,
-        registerDto,
-      ),
+      this.authClient.send<UserResponseDto>(MESSAGE_PATTERNS.USER_REGISTER, registerDto),
     );
 
     // Generate JWT token for the new user

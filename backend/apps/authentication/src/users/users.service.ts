@@ -59,10 +59,7 @@ export class UsersService {
   /**
    * Validate user credentials for login
    */
-  async validateUser(
-    email: string,
-    password: string,
-  ): Promise<UserResponseDto | null> {
+  async validateUser(email: string, password: string): Promise<UserResponseDto | null> {
     this.logger.log('Validating user credentials', {
       context: 'UsersService',
       email,

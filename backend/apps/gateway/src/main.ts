@@ -42,9 +42,7 @@ async function bootstrap() {
   // Swagger documentation setup
   const config = new DocumentBuilder()
     .setTitle('Aladia Full-Stack API')
-    .setDescription(
-      'REST API Gateway for microservices-based authentication system',
-    )
+    .setDescription('REST API Gateway for microservices-based authentication system')
     .setVersion('1.0')
     .addTag('Authentication', 'User registration and authentication endpoints')
     .addTag('Health', 'Service health and readiness probes')
