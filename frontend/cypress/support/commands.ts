@@ -4,36 +4,6 @@
 // Custom commands for Cypress E2E tests
 // ***********************************************
 
-declare global {
-  namespace Cypress {
-    interface Chainable {
-      /**
-       * Custom command to login via API
-       * @example cy.login('test@example.com', 'password123')
-       */
-      login(email: string, password: string): Chainable<void>;
-
-      /**
-       * Custom command to register a new user via API
-       * @example cy.register('John Doe', 'test@example.com', 'SecurePass123')
-       */
-      register(name: string, email: string, password: string): Chainable<void>;
-
-      /**
-       * Custom command to clear database via API (if endpoint exists)
-       * @example cy.clearDatabase()
-       */
-      clearLocalStorage(): Chainable<void>;
-
-      /**
-       * Custom command to get by data-testid attribute
-       * @example cy.getByTestId('submit-button')
-       */
-      getByTestId(testId: string): Chainable<JQuery<HTMLElement>>;
-    }
-  }
-}
-
 /**
  * Login command - authenticates user via API and stores token
  */
@@ -72,13 +42,6 @@ Cypress.Commands.add('register', (name: string, email: string, password: string)
 });
 
 /**
- * Clear local storage command
- */
-Cypress.Commands.add('clearLocalStorage', () => {
-  cy.clearLocalStorage();
-});
-
-/**
  * Get by test ID command
  */
 Cypress.Commands.add('getByTestId', (testId: string) => {
@@ -86,7 +49,34 @@ Cypress.Commands.add('getByTestId', (testId: string) => {
 });
 
 // Prevent Cypress from failing on uncaught exceptions
-Cypress.on('uncaught:exception', (err, runnable) => {
+Cypress.on('uncaught:exception', () => {
   // returning false here prevents Cypress from failing the test
   return false;
 });
+
+// Type declarations for custom commands
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      /**
+       * Custom command to login via API
+       * @example cy.login('test@example.com', 'password123')
+       */
+      login(email: string, password: string): Chainable<void>;
+
+      /**
+       * Custom command to register a new user via API
+       * @example cy.register('John Doe', 'test@example.com', 'SecurePass123')
+       */
+      register(name: string, email: string, password: string): Chainable<void>;
+
+      /**
+       * Custom command to get by data-testid attribute
+       * @example cy.getByTestId('submit-button')
+       */
+      getByTestId(testId: string): Chainable<JQuery<HTMLElement>>;
+    }
+  }
+}
+
+export {};
