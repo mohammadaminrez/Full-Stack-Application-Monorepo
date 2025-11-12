@@ -1,0 +1,25 @@
+# Railway ignore file for frontend
+# Files and directories to exclude from Railway builds
+
+node_modules/
+.next/
+out/
+coverage/
+.env
+.env.local
+.env.*.local
+.git/
+.gitignore
+*.md
+cypress/
+.vscode/
+.idea/
+.DS_Store
+build-storybook.log
+chromatic.config.json
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+.storybook/
+
