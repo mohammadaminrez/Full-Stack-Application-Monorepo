@@ -42,7 +42,9 @@ export class UsersRepository {
       if (error.code === 11000) {
         throw new ConflictException('Email already registered');
       }
-      throw new InternalServerErrorException('Failed to create user');
+      throw new InternalServerErrorException(
+        `Failed to register user: ${error.message || 'Database error'}`,
+      );
     }
   }
 
@@ -67,7 +69,9 @@ export class UsersRepository {
       if (error.code === 11000) {
         throw new ConflictException('Email already registered');
       }
-      throw new InternalServerErrorException('Failed to create user');
+      throw new InternalServerErrorException(
+        `Failed to create user: ${error.message || 'Database error'}`,
+      );
     }
   }
 
