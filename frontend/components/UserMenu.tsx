@@ -54,7 +54,7 @@ export function UserMenu({ userEmail, userName }: UserMenuProps) {
 
   const handleLogout = () => {
     // Clear auth data from localStorage
-    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
 
     toast.success('Logged out successfully');
