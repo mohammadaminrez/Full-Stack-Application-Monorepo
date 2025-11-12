@@ -106,41 +106,53 @@ jobs:
 
       - name: Start authentication service in background
         working-directory: backend
-        run: node dist/apps/authentication/main &
-        env:
-          NODE_ENV: test
-          MONGODB_URI: mongodb://localhost:27017/aladia-test
-          JWT_SECRET: test-secret-key-for-ci-testing-only
-          AUTH_HOST: 0.0.0.0
-          AUTH_PORT: 3002
-          THROTTLE_TTL: 60000
-          THROTTLE_LIMIT: 1000
+        run: |
+          NODE_ENV=test \
+          MONGODB_URI=mongodb://localhost:27017/aladia-test \
+          JWT_SECRET=test-secret-key-for-ci-testing-only \
+          AUTH_HOST=0.0.0.0 \
+          AUTH_PORT=3002 \
+          THROTTLE_TTL=60 \
+          THROTTLE_LIMIT=10000 \
+          node dist/apps/authentication/main > /tmp/auth.log 2>&1 &
+          echo $! > /tmp/auth.pid
+          sleep 2
 
       - name: Start gateway in background
         working-directory: backend
-        run: node dist/apps/gateway/main &
-        env:
-          NODE_ENV: test
-          MONGODB_URI: mongodb://localhost:27017/aladia-test
-          JWT_SECRET: test-secret-key-for-ci-testing-only
-          GATEWAY_PORT: 3000
-          AUTH_HOST: localhost
-          AUTH_PORT: 3002
-          THROTTLE_TTL: 60000
-          THROTTLE_LIMIT: 1000
+        run: |
+          NODE_ENV=test \
+          MONGODB_URI=mongodb://localhost:27017/aladia-test \
+          JWT_SECRET=test-secret-key-for-ci-testing-only \
+          GATEWAY_PORT=3000 \
+          AUTH_HOST=localhost \
+          AUTH_PORT=3002 \
+          THROTTLE_TTL=60 \
+          THROTTLE_LIMIT=10000 \
+          node dist/apps/gateway/main > /tmp/gateway.log 2>&1 &
+          echo $! > /tmp/gateway.pid
+          sleep 3
 
       - name: Wait for backend to be ready
         run: |
           echo "Waiting for backend API..."
+          echo "Auth service PID: $(cat /tmp/auth.pid 2>/dev/null || echo 'not found')"
+          echo "Gateway PID: $(cat /tmp/gateway.pid 2>/dev/null || echo 'not found')"
           timeout 90 bash -c 'until curl -f http://localhost:3000/api/health 2>/dev/null || curl -f http://localhost:3000/api 2>/dev/null; do
             echo "Waiting for API to be ready..."
             sleep 3
           done' || {
-            echo "Backend failed to start. Checking for processes..."
+            echo "Backend failed to start."
+            echo "=== Auth service logs ==="
+            cat /tmp/auth.log || echo "No auth logs"
+            echo "=== Gateway logs ==="
+            cat /tmp/gateway.log || echo "No gateway logs"
+            echo "=== Running processes ==="
             ps aux | grep node
             exit 1
           }
           echo "Backend is ready!"
+          echo "Throttle settings: TTL=60, LIMIT=10000"
 
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
