@@ -31,6 +31,10 @@ jobs:
         working-directory: backend
         run: npm run lint
 
+      - name: Build
+        working-directory: backend
+        run: npm run build
+
       - name: Run tests with coverage
         working-directory: backend
         run: npm run test:cov
@@ -41,6 +45,7 @@ jobs:
           files: ./backend/coverage/lcov.info
           flags: backend
           name: backend-coverage
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
   # Frontend linting and testing
@@ -81,6 +86,7 @@ jobs:
           files: ./frontend/coverage/lcov.info
           flags: frontend
           name: frontend-coverage
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
       - name: Build
