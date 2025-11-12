@@ -1,4 +1,4 @@
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { Injectable, Inject, Logger, ConflictException } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { UsersRepository } from './users.repository';
 import { RegisterUserDto } from '@app/common/dto/register-user.dto';
@@ -29,6 +29,16 @@ export class UsersService {
       email: registerDto.email,
     });
 
+    // Pre-check for existing email (safety measure before database insert)
+    const existingUser = await this.usersRepository.findByEmail(registerDto.email);
+    if (existingUser) {
+      this.logger.warn('Registration attempt with existing email', {
+        context: 'UsersService',
+        email: registerDto.email,
+      });
+      throw new ConflictException('Email already registered');
+    }
+
     const user = await this.usersRepository.create(registerDto);
 
     this.logger.log('User registered successfully', {
@@ -52,6 +62,17 @@ export class UsersService {
       email: createUserDto.email,
       creatorId,
     });
+
+    // Pre-check for existing email (safety measure before database insert)
+    const existingUser = await this.usersRepository.findByEmail(createUserDto.email);
+    if (existingUser) {
+      this.logger.warn('User creation attempt with existing email', {
+        context: 'UsersService',
+        email: createUserDto.email,
+        creatorId,
+      });
+      throw new ConflictException('Email already registered');
+    }
 
     const user = await this.usersRepository.createByUser(createUserDto, creatorId);
 
