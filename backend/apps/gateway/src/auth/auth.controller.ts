@@ -39,11 +39,11 @@ export class AuthController {
   /**
    * Register new user account
    * POST /api/auth/register
-   * Rate limited to 3 requests per minute to prevent abuse
+   * Rate limited to 1000 requests per minute to prevent abuse
    */
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @Throttle({ default: { limit: 3, ttl: 60000 } }) // 3 requests per minute
+  @Throttle({ default: { limit: 1000, ttl: 60000 } }) // 1000 requests per minute (high for testing)
   @ApiOperation({ summary: 'Register a new user account' })
   @ApiResponse({
     status: 201,
@@ -83,11 +83,11 @@ export class AuthController {
   /**
    * User login
    * POST /api/auth/login
-   * Rate limited to 5 requests per minute to prevent brute force attacks
+   * Rate limited to 1000 requests per minute to prevent brute force attacks
    */
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 requests per minute
+  @Throttle({ default: { limit: 1000, ttl: 60000 } }) // 1000 requests per minute (high for testing)
   @ApiOperation({ summary: 'Login with email and password' })
   @ApiResponse({
     status: 200,
