@@ -112,8 +112,8 @@ jobs:
           JWT_SECRET=test-secret-key-for-ci-testing-only \
           AUTH_HOST=0.0.0.0 \
           AUTH_PORT=3002 \
-          THROTTLE_TTL=60 \
-          THROTTLE_LIMIT=10000 \
+          THROTTLE_TTL=1 \
+          THROTTLE_LIMIT=1000000 \
           node dist/apps/authentication/main > /tmp/auth.log 2>&1 &
           echo $! > /tmp/auth.pid
           sleep 2
@@ -127,8 +127,8 @@ jobs:
           GATEWAY_PORT=3000 \
           AUTH_HOST=localhost \
           AUTH_PORT=3002 \
-          THROTTLE_TTL=60 \
-          THROTTLE_LIMIT=10000 \
+          THROTTLE_TTL=1 \
+          THROTTLE_LIMIT=1000000 \
           node dist/apps/gateway/main > /tmp/gateway.log 2>&1 &
           echo $! > /tmp/gateway.pid
           sleep 3
@@ -152,7 +152,7 @@ jobs:
             exit 1
           }
           echo "Backend is ready!"
-          echo "Throttle settings: TTL=60, LIMIT=10000"
+          echo "Throttle settings: TTL=1, LIMIT=1000000 (effectively disabled for tests)"
 
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6

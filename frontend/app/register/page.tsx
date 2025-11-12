@@ -73,8 +73,14 @@ export default function RegisterPage() {
       toast.success(`Welcome, ${user.name}!`);
       router.push('/users');
     } catch (error: any) {
-      const message =
-        error.response?.data?.message || 'Registration failed. Please try again.';
+      const status = error.response?.status;
+      let message = error.response?.data?.message || 'Registration failed. Please try again.';
+
+      // Handle specific error cases
+      if (status === 409 || message.toLowerCase().includes('already')) {
+        message = 'This email is already registered. Please use a different email or try logging in.';
+      }
+
       toast.error(message);
     } finally {
       setLoading(false);
@@ -113,7 +119,7 @@ export default function RegisterPage() {
 
               <InputField
                 label="Email"
-                type="email"
+                type="text"
                 placeholder="john@example.com"
                 value={formData.email}
                 onChange={(e) =>

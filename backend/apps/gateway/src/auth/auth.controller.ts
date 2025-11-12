@@ -8,6 +8,8 @@ import {
   Inject,
   UnauthorizedException,
   UseGuards,
+  ConflictException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
@@ -52,15 +54,30 @@ export class AuthController {
   @ApiResponse({ status: 409, description: 'Email already exists' })
   @ApiResponse({ status: 429, description: 'Too many requests' })
   async register(@Body() registerDto: RegisterUserDto): Promise<AuthResponseDto> {
-    // Send registration request to auth microservice via TCP
-    const user = await firstValueFrom(
-      this.authClient.send<UserResponseDto>(MESSAGE_PATTERNS.USER_REGISTER, registerDto),
-    );
+    try {
+      // Send registration request to auth microservice via TCP
+      const user = await firstValueFrom(
+        this.authClient.send<UserResponseDto>(
+          MESSAGE_PATTERNS.USER_REGISTER,
+          registerDto,
+        ),
+      );
 
-    // Generate JWT token for the new user
-    const accessToken = await this.authService.generateToken(user);
+      // Generate JWT token for the new user
+      const accessToken = await this.authService.generateToken(user);
 
-    return new AuthResponseDto(user, accessToken);
+      return new AuthResponseDto(user, accessToken);
+    } catch (error) {
+      // Handle errors from the microservice
+      if (error?.message?.includes('Email already registered')) {
+        throw new ConflictException('Email already registered');
+      }
+      if (error?.message?.includes('already registered')) {
+        throw new ConflictException('Email already registered');
+      }
+      // Re-throw the error if it's not a known error
+      throw new InternalServerErrorException('Failed to register user');
+    }
   }
 
   /**

@@ -90,7 +90,7 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <InputField
                 label="Email"
-                type="email"
+                type="text"
                 placeholder="john@example.com"
                 value={formData.email}
                 onChange={(e) =>
