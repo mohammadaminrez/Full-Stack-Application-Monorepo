@@ -23,7 +23,7 @@ describe('User Login Flow', () => {
     cy.contains('Sign in to your account').should('be.visible');
 
     // Check form fields
-    cy.get('input[type="email"]').should('be.visible');
+    cy.get('input[placeholder="john@example.com"]').should('be.visible');
     cy.get('input[type="password"]').should('be.visible');
 
     // Check submit button
@@ -42,7 +42,7 @@ describe('User Login Flow', () => {
   });
 
   it('should show validation error for invalid email format', () => {
-    cy.get('input[type="email"]').type('invalid-email');
+    cy.get('input[placeholder="john@example.com"]').type('invalid-email');
     cy.get('input[type="password"]').type('password123');
 
     cy.contains('button', 'Sign In').click();
@@ -51,7 +51,7 @@ describe('User Login Flow', () => {
   });
 
   it('should show error for invalid credentials', () => {
-    cy.get('input[type="email"]').type('wrong@example.com');
+    cy.get('input[placeholder="john@example.com"]').type('wrong@example.com');
     cy.get('input[type="password"]').type('WrongPassword123');
 
     cy.contains('button', 'Sign In').click();
@@ -60,7 +60,7 @@ describe('User Login Flow', () => {
   });
 
   it('should show error for wrong password', () => {
-    cy.get('input[type="email"]').type(testUser.email);
+    cy.get('input[placeholder="john@example.com"]').type(testUser.email);
     cy.get('input[type="password"]').type('WrongPassword123');
 
     cy.contains('button', 'Sign In').click();
@@ -69,7 +69,7 @@ describe('User Login Flow', () => {
   });
 
   it('should successfully login with valid credentials', () => {
-    cy.get('input[type="email"]').type(testUser.email);
+    cy.get('input[placeholder="john@example.com"]').type(testUser.email);
     cy.get('input[type="password"]').type(testUser.password);
 
     cy.contains('button', 'Sign In').click();
@@ -101,7 +101,7 @@ describe('User Login Flow', () => {
   });
 
   it('should show loading state during login', () => {
-    cy.get('input[type="email"]').type(testUser.email);
+    cy.get('input[placeholder="john@example.com"]').type(testUser.email);
     cy.get('input[type="password"]').type(testUser.password);
 
     // Intercept the request to simulate slow response
@@ -120,7 +120,7 @@ describe('User Login Flow', () => {
   });
 
   it('should persist login after page refresh', () => {
-    cy.get('input[type="email"]').type(testUser.email);
+    cy.get('input[placeholder="john@example.com"]').type(testUser.email);
     cy.get('input[type="password"]').type(testUser.password);
 
     cy.contains('button', 'Sign In').click();

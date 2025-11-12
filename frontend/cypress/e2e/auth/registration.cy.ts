@@ -13,7 +13,7 @@ describe('User Registration Flow', () => {
 
     // Check form fields
     cy.get('input[type="text"]').should('be.visible');
-    cy.get('input[type="email"]').should('be.visible');
+    cy.get('input[placeholder="john@example.com"]').should('be.visible');
     cy.get('input[type="password"]').should('be.visible');
 
     // Check submit button
@@ -36,7 +36,7 @@ describe('User Registration Flow', () => {
 
   it('should show validation error for invalid email', () => {
     cy.get('input[type="text"]').type('John Doe');
-    cy.get('input[type="email"]').type('invalid-email');
+    cy.get('input[placeholder="john@example.com"]').type('invalid-email');
     cy.get('input[type="password"]').type('SecurePass123');
 
     cy.contains('button', 'Create Account').click();
@@ -46,7 +46,7 @@ describe('User Registration Flow', () => {
 
   it('should show validation error for weak password', () => {
     cy.get('input[type="text"]').type('John Doe');
-    cy.get('input[type="email"]').type('john@example.com');
+    cy.get('input[placeholder="john@example.com"]').type('john@example.com');
     cy.get('input[type="password"]').type('weak');
 
     cy.contains('button', 'Create Account').click();
@@ -56,7 +56,7 @@ describe('User Registration Flow', () => {
 
   it('should show validation error for password without uppercase', () => {
     cy.get('input[type="text"]').type('John Doe');
-    cy.get('input[type="email"]').type('john@example.com');
+    cy.get('input[placeholder="john@example.com"]').type('john@example.com');
     cy.get('input[type="password"]').type('lowercase123');
 
     cy.contains('button', 'Create Account').click();
@@ -66,7 +66,7 @@ describe('User Registration Flow', () => {
 
   it('should show validation error for short name', () => {
     cy.get('input[type="text"]').type('J');
-    cy.get('input[type="email"]').type('john@example.com');
+    cy.get('input[placeholder="john@example.com"]').type('john@example.com');
     cy.get('input[type="password"]').type('SecurePass123');
 
     cy.contains('button', 'Create Account').click();
@@ -79,7 +79,7 @@ describe('User Registration Flow', () => {
     const email = `testuser${timestamp}@example.com`;
 
     cy.get('input[type="text"]').type('Test User');
-    cy.get('input[type="email"]').type(email);
+    cy.get('input[placeholder="john@example.com"]').type(email);
     cy.get('input[type="password"]').type('SecurePass123');
 
     cy.contains('button', 'Create Account').click();
@@ -110,7 +110,7 @@ describe('User Registration Flow', () => {
 
     // Try to register with same email
     cy.get('input[type="text"]').type('Another User');
-    cy.get('input[type="email"]').type(email);
+    cy.get('input[placeholder="john@example.com"]').type(email);
     cy.get('input[type="password"]').type('SecurePass123');
 
     cy.contains('button', 'Create Account').click();
@@ -131,7 +131,7 @@ describe('User Registration Flow', () => {
     const email = `loading${timestamp}@example.com`;
 
     cy.get('input[type="text"]').type('Loading User');
-    cy.get('input[type="email"]').type(email);
+    cy.get('input[placeholder="john@example.com"]').type(email);
     cy.get('input[type="password"]').type('SecurePass123');
 
     // Intercept the request to simulate slow response
