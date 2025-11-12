@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from '@nestjs/testing';
 import { RequestLoggerMiddleware } from './request-logger.middleware';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -67,11 +68,7 @@ describe('RequestLoggerMiddleware', () => {
 
   describe('use', () => {
     it('should generate request ID if not provided', () => {
-      middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        nextFunction,
-      );
+      middleware.use(mockRequest as Request, mockResponse as Response, nextFunction);
 
       expect(mockResponse.setHeader).toHaveBeenCalledWith(
         'X-Request-ID',
@@ -96,11 +93,7 @@ describe('RequestLoggerMiddleware', () => {
         'x-request-id': existingId,
       };
 
-      middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        nextFunction,
-      );
+      middleware.use(mockRequest as Request, mockResponse as Response, nextFunction);
 
       expect(mockResponse.setHeader).toHaveBeenCalledWith('X-Request-ID', existingId);
       expect(mockLogger.info).toHaveBeenCalledWith(
@@ -112,22 +105,14 @@ describe('RequestLoggerMiddleware', () => {
     });
 
     it('should add request ID to request object', () => {
-      middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        nextFunction,
-      );
+      middleware.use(mockRequest as Request, mockResponse as Response, nextFunction);
 
       expect((mockRequest as any).requestId).toBeDefined();
       expect(typeof (mockRequest as any).requestId).toBe('string');
     });
 
     it('should call next function', () => {
-      middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        nextFunction,
-      );
+      middleware.use(mockRequest as Request, mockResponse as Response, nextFunction);
 
       expect(nextFunction).toHaveBeenCalled();
     });
@@ -135,11 +120,7 @@ describe('RequestLoggerMiddleware', () => {
     it('should handle missing user-agent', () => {
       mockRequest.headers = {};
 
-      middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        nextFunction,
-      );
+      middleware.use(mockRequest as Request, mockResponse as Response, nextFunction);
 
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Incoming request',
@@ -152,11 +133,7 @@ describe('RequestLoggerMiddleware', () => {
     it('should log completion with info level for 2xx status', () => {
       mockResponse.statusCode = 200;
 
-      middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        nextFunction,
-      );
+      middleware.use(mockRequest as Request, mockResponse as Response, nextFunction);
 
       // Trigger finish event
       (mockResponse as any).emit('finish');
@@ -174,11 +151,7 @@ describe('RequestLoggerMiddleware', () => {
     it('should log completion with warn level for 4xx status', () => {
       mockResponse.statusCode = 404;
 
-      middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        nextFunction,
-      );
+      middleware.use(mockRequest as Request, mockResponse as Response, nextFunction);
 
       (mockResponse as any).emit('finish');
 
@@ -194,11 +167,7 @@ describe('RequestLoggerMiddleware', () => {
     it('should log completion with error level for 5xx status', () => {
       mockResponse.statusCode = 500;
 
-      middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        nextFunction,
-      );
+      middleware.use(mockRequest as Request, mockResponse as Response, nextFunction);
 
       (mockResponse as any).emit('finish');
 
@@ -212,11 +181,7 @@ describe('RequestLoggerMiddleware', () => {
     });
 
     it('should include duration in milliseconds', () => {
-      middleware.use(
-        mockRequest as Request,
-        mockResponse as Response,
-        nextFunction,
-      );
+      middleware.use(mockRequest as Request, mockResponse as Response, nextFunction);
 
       (mockResponse as any).emit('finish');
 

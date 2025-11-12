@@ -1,15 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
-import { ClientProxy } from '@nestjs/microservices';
 import { of, throwError } from 'rxjs';
 import { CreateUserDto } from '@app/common/dto/create-user.dto';
 import { UpdateUserDto } from '@app/common/dto/update-user.dto';
 import { UserResponseDto } from '@app/common/dto/user-response.dto';
 import { MESSAGE_PATTERNS } from '@app/common/interfaces/message-patterns';
 
+interface MockRequest {
+  user: { sub: string };
+}
+
 describe('UsersController', () => {
   let controller: UsersController;
-  let authClient: ClientProxy;
 
   const mockAuthClient = {
     send: jest.fn(),
@@ -22,7 +25,7 @@ describe('UsersController', () => {
     createdAt: new Date('2024-01-01'),
   };
 
-  const mockRequest = {
+  const mockRequest: MockRequest = {
     user: { sub: 'creator123' },
   };
 
@@ -38,7 +41,6 @@ describe('UsersController', () => {
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
-    authClient = module.get<ClientProxy>('AUTH_SERVICE');
   });
 
   afterEach(() => {
@@ -115,10 +117,9 @@ describe('UsersController', () => {
       const result = await controller.getUserById('user123');
 
       expect(result).toEqual(mockUser);
-      expect(mockAuthClient.send).toHaveBeenCalledWith(
-        MESSAGE_PATTERNS.USER_FIND_BY_ID,
-        { userId: 'user123' },
-      );
+      expect(mockAuthClient.send).toHaveBeenCalledWith(MESSAGE_PATTERNS.USER_FIND_BY_ID, {
+        userId: 'user123',
+      });
     });
 
     it('should return null when user not found', async () => {
@@ -181,11 +182,11 @@ describe('UsersController', () => {
     });
 
     it('should handle deletion errors', async () => {
-      mockAuthClient.send.mockReturnValue(
-        throwError(() => new Error('User not found')),
-      );
+      mockAuthClient.send.mockReturnValue(throwError(() => new Error('User not found')));
 
-      await expect(controller.deleteUser('user123', mockRequest as any)).rejects.toThrow();
+      await expect(
+        controller.deleteUser('user123', mockRequest as any),
+      ).rejects.toThrow();
     });
   });
 });

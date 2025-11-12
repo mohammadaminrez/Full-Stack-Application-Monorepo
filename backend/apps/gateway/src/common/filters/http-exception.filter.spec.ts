@@ -1,8 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  HttpExceptionFilter,
-  StandardErrorResponse,
-} from './http-exception.filter';
+import { HttpExceptionFilter } from './http-exception.filter';
 import {
   HttpException,
   HttpStatus,
@@ -13,11 +10,12 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { ArgumentsHost } from '@nestjs/common';
+import { Request } from 'express';
 
 describe('HttpExceptionFilter', () => {
   let filter: HttpExceptionFilter;
-  let mockResponse: any;
-  let mockRequest: any;
+  let mockResponse: { status: jest.Mock; json: jest.Mock };
+  let mockRequest: Partial<Request>;
   let mockArgumentsHost: ArgumentsHost;
 
   beforeEach(async () => {
@@ -49,7 +47,7 @@ describe('HttpExceptionFilter', () => {
       getType: jest.fn(),
       switchToRpc: jest.fn(),
       switchToWs: jest.fn(),
-    };
+    } as ArgumentsHost;
   });
 
   afterEach(() => {
@@ -130,9 +128,7 @@ describe('HttpExceptionFilter', () => {
 
       filter.catch(exception, mockArgumentsHost);
 
-      expect(mockResponse.status).toHaveBeenCalledWith(
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
       expect(mockResponse.json).toHaveBeenCalledWith({
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         error: 'Internal Server Error',

@@ -1,12 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HealthController } from './health.controller';
-import { ClientProxy } from '@nestjs/microservices';
 import { of, throwError, TimeoutError } from 'rxjs';
 import { MESSAGE_PATTERNS } from '@app/common/interfaces/message-patterns';
 
 describe('HealthController', () => {
   let controller: HealthController;
-  let authClient: ClientProxy;
 
   const mockAuthClient = {
     send: jest.fn(),
@@ -24,7 +22,6 @@ describe('HealthController', () => {
     }).compile();
 
     controller = module.get<HealthController>(HealthController);
-    authClient = module.get<ClientProxy>('AUTH_SERVICE');
   });
 
   afterEach(() => {
@@ -69,10 +66,7 @@ describe('HealthController', () => {
         timestamp: expect.any(String),
       });
 
-      expect(mockAuthClient.send).toHaveBeenCalledWith(
-        MESSAGE_PATTERNS.HEALTH_CHECK,
-        {},
-      );
+      expect(mockAuthClient.send).toHaveBeenCalledWith(MESSAGE_PATTERNS.HEALTH_CHECK, {});
     });
 
     it('should return degraded status when auth service is down', async () => {
@@ -93,9 +87,7 @@ describe('HealthController', () => {
     });
 
     it('should return degraded status on timeout', async () => {
-      mockAuthClient.send.mockReturnValue(
-        throwError(() => new TimeoutError()),
-      );
+      mockAuthClient.send.mockReturnValue(throwError(() => new TimeoutError()));
 
       const result = await controller.ready();
 
