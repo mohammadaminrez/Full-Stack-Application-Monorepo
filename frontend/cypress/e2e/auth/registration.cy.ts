@@ -115,8 +115,9 @@ describe('User Registration Flow', () => {
 
     cy.contains('button', 'Create Account').click();
 
-    // Should show error message - be flexible as it could say "already registered" or "already exists"
-    cy.get('body').should('contain.text', 'already');
+    // Should show error message in toast - wait for it to appear
+    // The error should mention the email is already registered
+    cy.contains('already registered', { timeout: 10000, matchCase: false }).should('be.visible');
   });
 
   it('should navigate to login page when clicking Sign In link', () => {
