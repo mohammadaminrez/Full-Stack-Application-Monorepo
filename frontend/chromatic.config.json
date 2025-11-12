@@ -1,0 +1,12 @@
+{
+  "projectId": "Project ID will be set via CHROMATIC_PROJECT_TOKEN",
+  "buildScriptName": "build-storybook",
+  "exitZeroOnChanges": true,
+  "exitOnceUploaded": true,
+  "onlyChanged": true,
+  "skip": "dependabot/**",
+  "externals": [
+    "public/**"
+  ],
+  "autoAcceptChanges": false
+}
