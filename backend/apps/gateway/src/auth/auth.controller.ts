@@ -69,14 +69,28 @@ export class AuthController {
       return new AuthResponseDto(user, accessToken);
     } catch (error) {
       // Handle errors from the microservice
-      if (error?.message?.includes('Email already registered')) {
+      // RPC errors come in different formats, check all possible locations
+      const errorMessage = error?.message || error?.error?.message || error?.error || '';
+      const errorString = JSON.stringify(error);
+
+      // Check if it's a duplicate email error
+      if (errorMessage.toLowerCase().includes('email') &&
+          (errorMessage.includes('already') || errorMessage.includes('registered') ||
+           errorMessage.includes('exists') || errorMessage.includes('duplicate'))) {
         throw new ConflictException('Email already registered');
       }
-      if (error?.message?.includes('already registered')) {
-        throw new ConflictException('Email already registered');
-      }
-      // Re-throw the error if it's not a known error
-      throw new InternalServerErrorException('Failed to register user');
+
+      // Log the full error for debugging
+      console.error('Registration error:', {
+        message: error?.message,
+        error: error?.error,
+        full: errorString
+      });
+
+      // Re-throw the error with details for debugging
+      throw new InternalServerErrorException(
+        error?.message || error?.error || 'Failed to register user'
+      );
     }
   }
 
